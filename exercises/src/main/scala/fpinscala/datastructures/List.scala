@@ -159,11 +159,43 @@ object List { // `List` companion object. Contains functions for creating and wo
     foldLeft(l, (b:B)=>b ) /* zero val is identity func.
      now fL still waiting for `f: BxA => B` 
        (f curr (car L)) -> newCurr
-    */ ((g, a) => /* a func takes 2 args and ret another func that
-      
-    */   b => g(f(a,b))) 
+    */ ((g, a) => /* a func takes 2 args (g, a) and ret another func that
+      takes 1 args, return g(f(a, b)) */ b => g(f(a,b))) 
       (z)
-  
+    
+  def appendByFoldLeft[A](l: List[A], r: List[A]): List[A] =
+    foldLeft(reverse(l), r)((curr, h)=>Cons(h, curr))
 
-  def map[A,B](l: List[A])(f: A => B): List[B] = ???
+  def appendNByFoldRight[A](l: List[A], r: List[A]): List[A] =
+    foldRight(l, r)((h, curr)=>Cons(h, curr))
+  /* using foldright is actually faster in this case, 
+     As the function itself is Cons(_,_)  
+     
+     let say, L has len(n), R has len(m), then at n-th call:
+     we had L_1::L_2::...::L_n::R
+     which, is exactly what we want. 
+
+     So no need to do another n calls, sense it is already there.
+     */
+
+  def concat[A](l: List[List[A]]): List[A] =
+    foldRight(l, Nil:List[A])(append) // L1::L2::L3..::Ln::Nil
+  
+    foldLeft(l, Nil:List[A])((curr, h)=> match curr {
+      case Nil => Cons(h, curr)
+      case _ => append(curr, Cons(h, Nil))
+    } /* Since Nil can't be at beginning at a list, 
+        need to deal with 1 special case  */
+  )
+
+  def add1(l: List[Int]): List[Int] = 
+    foldLeft(l, Nil:List[Int])((currL, h)=>Cons(h+1, currL))
+  
+  def map[A,B](l: List[A])(f: A => B): List[B] = 
+    foldLeft(l, Nil:List[B])( (currL, h)=>Cons(f(h), currL) )
+
+  def flatMap[A,B](l: List[A])(f: A=>List[B]): List[B] = 
+    concat(map(l)(f))
+      
+
 }
