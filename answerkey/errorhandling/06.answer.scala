@@ -16,3 +16,11 @@ def orElse[EE >: E, AA >: A](b: => Either[EE, AA]): Either[EE, AA] =
   }
 def map2[EE >: E, B, C](b: Either[EE, B])(f: (A, B) => C): 
   Either[EE, C] = for { a <- this; b1 <- b } yield f(a,b1)
+
+def map2_0[EE >: E, B, C](b: Either[EE, B])(f: (A, B) => C): 
+  Either[EE, C] = 
+  this flatMap (aa => b map (bb => f(aa, bb)))
+
+def map3[EE >: E, B, C, D](b: Either[EE, B], c: Either[EE, C])
+  (f: (A, B, C) => D): Either[EE, D] = 
+  for { a <- this; b1 <- b; c1 <- c } yield f(a,b1,c1)
