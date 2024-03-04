@@ -24,3 +24,7 @@ def map2_0[EE >: E, B, C](b: Either[EE, B])(f: (A, B) => C):
 def map3[EE >: E, B, C, D](b: Either[EE, B], c: Either[EE, C])
   (f: (A, B, C) => D): Either[EE, D] = 
   for { a <- this; b1 <- b; c1 <- c } yield f(a,b1,c1)
+
+def map3_0[EE >: E, B, C, D](b: Either[EE, B], c: Either[EE, C])
+  (f: (A, B, C) => D): Either[EE, D] = 
+  this flatMap (aa => b flatMap (bb => c map (cc => f(aa, bb, cc))))
